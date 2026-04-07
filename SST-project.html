@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restoration and Regeneration</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4a 50%, #0f3d1f 100%);
+      font-family: 'Georgia', serif;
+      color: #f0f8f4;
+    }
+
+    .presentation-container {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slides-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 80px;
+      text-align: center;
+      opacity: 0;
+      animation: slideIn 0.8s ease-out forwards;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 10;
+    }
+
+    .slide.prev {
+      animation: slideOut 0.8s ease-in forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-100px) scale(0.95);
+      }
+    }
+
+    .slide-title {
+      font-size: 3.5rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #a8e6cf;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+      animation: titleFloat 1.2s ease-out forwards;
+    }
+
+    @keyframes titleFloat {
+      from {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-content {
+      font-size: 1.3rem;
+      line-height: 1.8;
+      max-width: 900px;
+      animation: contentFade 1.5s ease-out 0.3s forwards;
+      opacity: 0;
+      color: #e8f5f1;
+    }
+
+    @keyframes contentFade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .icon-container {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 30px;
+      background: rgba(168, 230, 207, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: iconPulse 2s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .icon-container i {
+      width: 80px;
+      height: 80px;
+      color: #a8e6cf;
+      stroke-width: 1.5;
+    }
+
+    .title-slide {
+      background: linear-gradient(135deg, rgba(42, 122, 74, 0.8) 0%, rgba(15, 61, 31, 0.8) 100%);
+      backdrop-filter: blur(10px);
+    }
+
+    .title-slide .slide-title {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      color: #a8e6cf;
+      margin-top: 20px;
+      font-style: italic;
+      animation: subtitleFade 2s ease-out 0.6s forwards;
+      opacity: 0;
+    }
+
+    @keyframes subtitleFade {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .progress-dots {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 20;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(168, 230, 207, 0.4);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      border: 2px solid transparent;
+    }
+
+    .dot.active {
+      background: #a8e6cf;
+      width: 30px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px rgba(168, 230, 207, 0.6);
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 40px;
+      right: 40px;
+      display: flex;
+      gap: 15px;
+      z-index: 20;
+    }
+
+    .control-btn {
+      width: 50px;
+      height: 50px;
+      background: rgba(168, 230, 207, 0.2);
+      border: 2px solid rgba(168, 230, 207, 0.6);
+      border-radius: 50%;
+      color: #a8e6cf;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(168, 230, 207, 0.4);
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(168, 230, 207, 0.5);
+    }
+
+    .timer {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 1.2rem;
+      color: #a8e6cf;
+      background: rgba(168, 230, 207, 0.15);
+      padding: 12px 25px;
+      border-radius: 50px;
+      border: 2px solid rgba(168, 230, 207, 0.4);
+      z-index: 20;
+    }
+
+    .highlight {
+      color: #a8e6cf;
+      font-weight: bold;
+    }
+
+    ul {
+      text-align: left;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    li {
+      margin: 15px 0;
+      padding-left: 30px;
+      position: relative;
+      animation: listItemFade 1s ease-out forwards;
+      opacity: 0;
+    }
+
+    li:nth-child(1) { animation-delay: 0.4s; }
+    li:nth-child(2) { animation-delay: 0.6s; }
+    li:nth-child(3) { animation-delay: 0.8s; }
+
+    @keyframes listItemFade {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    li:before {
+      content: "🌿";
+      position: absolute;
+      left: 0;
+      font-size: 1.2rem;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="presentation-container">
+   <div class="slides-wrapper" id="slidesWrapper">
+    <!-- Slide 1: Title -->
+    <div class="slide title-slide active">
+     <div class="icon-container">
+      <i data-lucide="leaf"></i>
+     </div>
+     <h1 class="slide-title">Resources &amp; Sustainability</h1>
+     <p class="subtitle">Renewable vs Non-Renewable</p>
+    </div><!-- Slide 2: Renewable Resources -->
+    <div class="slide">
+     <div class="icon-container">
+      <i data-lucide="sun"></i>
+     </div>
+     <h2 class="slide-title">Renewable Resources</h2>
+     <div class="slide-content">
+      <p>Resources that <span class="highlight">naturally replenish</span> over time when managed sustainably.</p>
+      <p style="margin-top: 30px;"><span class="highlight">Examples:</span></p>
+      <ul style="margin-top: 20px;">
+       <li>Solar Energy</li>
+       <li>Wind Energy</li>
+       <li>Water from rivers and rainfall</li>
+       <li>Timber from forests</li>
+      </ul>
+     </div>
+    </div><!-- Slide 3: How Renewable Works -->
+    <div class="slide">
+     <div class="icon-container">
+      <i data-lucide="cycle"></i>
+     </div>
+     <h2 class="slide-title">How Renewable Works</h2>
+     <div class="slide-content">
+      <p>The sun shines daily, wind blows regularly, and forests grow new trees.</p>
+      <p style="margin-top: 30px;">India has <span class="highlight">abundant sunshine</span> and regular rainfall that feeds rivers and replenishes soil.</p>
+      <p style="margin-top: 30px;"><span class="highlight">Key:</span> Must be used at the rate nature can replace them.</p>
+     </div>
+    </div><!-- Slide 4: The Challenge with Renewables -->
+    <div class="slide">
+     <div class="icon-container">
+      <i data-lucide="alert-triangle"></i>
+     </div>
+     <h2 class="slide-title">The Challenge</h2>
+     <div class="slide-content">
+      <p>If we harvest faster than nature can replace, we lose them.</p>
+      <p style="margin-top: 30px;"><span class="highlight">Example:</span> Cutting trees faster than forests can grow = deforestation.</p>
+      <p style="margin-top: 30px;">Climate change is melting glaciers <span class="highlight">faster than rain can replace</span> them, threatening water security.</p>
+     </div>
+    </div><!-- Slide 5: Non-Renewable Resources -->
+    <div class="slide">
+     <div class="icon-container">
+      <i data-lucide="zap"></i>
+     </div>
+     <h2 class="slide-title">Non-Renewable Resources</h2>
+     <div class="slide-content">
+      <p>Resources that take <span class="highlight">millions of years to form</span> and cannot be replaced once used.</p>
+      <p style="margin-top: 30px;"><span class="highlight">Examples:</span></p>
+      <ul style="margin-top: 20px;">
+       <li>Coal</li>
+       <li>Petroleum (Oil)</li>
+       <li>Natural minerals (Gold, Copper, Iron)</li>
+      </ul>
+     </div>
+    </div><!-- Slide 6: The Reality -->
+    <div class="slide">
+     <div class="icon-container">
+      <i data-lucide="info"></i>
+     </div>
+     <h2 class="slide-title">Limited Time</h2>
+     <div class="slide-content">
+      <p>India's coal reserves may only last another <span class="highlight">50 years</span> at current usage rates.</p>
+      <p style="margin-top: 30px;">We must use them <span class="highlight">wisely</span> until sustainable alternatives are widely available.</p>
+      <p style="margin-top: 30px;">The choice is clear: shift toward renewable resources for a sustainable future.</p>
+     </div>
+    </div><!-- Slide 7: Thank You -->
+    <div class="slide title-slide">
+     <div class="icon-container">
+      <i data-lucide="heart"></i>
+     </div>
+     <h2 class="slide-title">Thank You</h2>
+     <p class="subtitle" style="margin-top: 30px;">Choose Sustainability, Choose Tomorrow</p>
+    </div>
+   </div><!-- Progress Dots -->
+   <div class="progress-dots" id="progressDots"></div><!-- Controls -->
+   <div class="controls">
+    <button class="control-btn" id="prevBtn" title="Previous slide"> <i data-lucide="chevron-left"></i> </button> <button class="control-btn" id="playPauseBtn" title="Play/Pause"> <i data-lucide="play"></i> </button> <button class="control-btn" id="nextBtn" title="Next slide"> <i data-lucide="chevron-right"></i> </button>
+   </div><!-- Timer -->
+   <div class="timer" id="timer">
+    30s
+   </div>
+  </div>
+  <script>
+    let currentSlide = 0;
+    let autoPlayInterval = null;
+    let isPlaying = true;
+    let timeRemaining = 30;
+
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const progressDotsContainer = document.getElementById('progressDots');
+    const timerDisplay = document.getElementById('timer');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Create progress dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(i));
+      progressDotsContainer.appendChild(dot);
+    }
+
+    const dots = document.querySelectorAll('.dot');
+
+    function goToSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      slides[currentSlide].classList.add('prev');
+      
+      currentSlide = (n + totalSlides) % totalSlides;
+      
+      slides[currentSlide].classList.remove('prev');
+      slides[currentSlide].classList.add('active');
+
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+
+      resetTimer();
+    }
+
+    function nextSlide() {
+      goToSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      goToSlide(currentSlide - 1);
+    }
+
+    function startAutoPlay() {
+      if (autoPlayInterval) clearInterval(autoPlayInterval);
+      if (currentSlide === totalSlides - 1) return; // Stop at last slide
+      
+      autoPlayInterval = setInterval(() => {
+        timeRemaining--;
+        timerDisplay.textContent = timeRemaining + 's';
+        
+        if (timeRemaining <= 0) {
+          if (currentSlide < totalSlides - 1) {
+            nextSlide();
+          } else {
+            pauseAutoPlay();
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      timeRemaining = 30;
+      timerDisplay.textContent = '30s';
+      
+      if (isPlaying) {
+        pauseAutoPlay();
+        startAutoPlay();
+      }
+    }
+
+    function togglePlayPause() {
+      isPlaying = !isPlaying;
+      
+      if (isPlaying) {
+        playPauseBtn.innerHTML = '<i data-lucide="pause"></i>';
+        startAutoPlay();
+      } else {
+        playPauseBtn.innerHTML = '<i data-lucide="play"></i>';
+        pauseAutoPlay();
+      }
+      
+      lucide.createIcons();
+    }
+
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      if (isPlaying) resetTimer();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      if (isPlaying) resetTimer();
+    });
+
+    playPauseBtn.addEventListener('click', togglePlayPause);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === ' ') {
+        e.preventDefault();
+        togglePlayPause();
+      }
+    });
+
+    // Start auto-play
+    startAutoPlay();
+    lucide.createIcons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e8a325e4308c87d',t:'MTc3NTU3NzExOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
